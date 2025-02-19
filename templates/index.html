@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Score tracker</title>
+    <link rel="icon" href="/Users/runhua/Desktop/code/static/favicon.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e9f7ef;
+            display: none;
+        }
+        .disclaimer {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your final score for IT/Tech course</h2>
+        <div class="input-group">
+            <input type="text" id="name" placeholder="Enter your full name" required>
+        </div>
+        <button onclick="query()">Submit</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="disclaimer">
+        <span class="warning-icon">⚠️</span>
+        <p><strong>Disclaimer:</strong> This score reflects only your performance on assignments and quizzes. Please note that <strong>attendance is the most critical factor</strong> for passing the course. If your attendance does not meet the required standard, you will not pass the course, regardless of your score.</p>
+    </div>
+
+    <script>
+        function query() {
+            const name = document.getElementById('name').value.trim();
+            if (!name) {
+                alert('Enter your full name!');
+                return;
+            }
+
+            fetch('/query?name=' + encodeURIComponent(name))
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.style.display = 'block';
+
+                    if (data.error) {
+                        resultDiv.innerHTML = '<p style="color: red;">' + data.error + '</p>';
+                    } else {
+                        resultDiv.innerHTML = `
+                            <p>Score:${data.score}<p>
+                            <p>Comment:${data.comment}<p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error', error);
+                    alert('Try again later');
+                });
+        }
+    </script>
+</body>
+</html>
